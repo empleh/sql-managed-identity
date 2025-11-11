@@ -39,10 +39,10 @@ jobs:
 #      with:
 #        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+    - name: Setup DotNet ${{ vars.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: ${{ vars.DOTNET_VERSION }}
 
     - name: 'Resolve Project Dependencies Using Dotnet'
       shell: bash # For Linux, use bash
