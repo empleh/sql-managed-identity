@@ -2,6 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp", "FunctionApp\FunctionApp.csproj", "{C73E67B9-1966-458A-8CA4-2B2F31448CA4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{40574476-EABF-4E9E-80A7-A69C84CE2EDA}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\azure-functions-app-dotnet.yml = ..\.github\workflows\azure-functions-app-dotnet.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
