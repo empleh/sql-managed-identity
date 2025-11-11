@@ -35,10 +35,10 @@ jobs:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v4
 
-#
-#      uses: azure/login@v2
-#      with:
-#        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Check function app project path
       shell: bash
