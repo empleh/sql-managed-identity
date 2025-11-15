@@ -126,7 +126,7 @@ param appName string = 'func-${resourceToken}'
 
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: 'st${appName}'
+  name: 'stsqlmanaged'
   location: location
   sku: {
     name: 'Standard_LRS'
