@@ -49,31 +49,6 @@ var monitoringMetricsPublisherId = '3913510d-42f4-4e42-8a64-420c390055eb'
 // Azure resources required by your function app.
 //********************************************
 
-resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
-  name: 'log-${resourceToken}'
-  location: location
-  properties: any({
-    retentionInDays: 30
-    features: {
-      searchVersion: 1
-    }
-    sku: {
-      name: 'PerGB2018'
-    }
-  })
-}
-
-resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: 'appi-${resourceToken}'
-  location: location
-  kind: 'web'
-  properties: {
-    Application_Type: 'web'
-    WorkspaceResourceId: logAnalytics.id
-    DisableLocalAuth: true
-  }
-}
-
 resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: 'st${resourceToken}'
   location: location
@@ -150,16 +125,6 @@ resource roleAssignmentTableStorage 'Microsoft.Authorization/roleAssignments@202
   }
 }
 
-resource roleAssignmentAppInsights 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(subscription().id, applicationInsights.id, userAssignedIdentity.id, 'Monitoring Metrics Publisher')
-  scope: applicationInsights
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', monitoringMetricsPublisherId)
-    principalId: userAssignedIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
 //********************************************
 // Function app and Flex Consumption plan definitions
 //********************************************
@@ -206,7 +171,6 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       }
       scaleAndConcurrency: {
         maximumInstanceCount: maximumInstanceCount
-        instanceMemoryMB: instanceMemoryMB
       }
       runtime: { 
         name: functionAppRuntime
@@ -220,7 +184,6 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
         AzureWebJobsStorage__accountName: storage.name
         AzureWebJobsStorage__credential : 'managedidentity'
         AzureWebJobsStorage__clientId: userAssignedIdentity.properties.clientId
-        APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.properties.InstrumentationKey
         APPLICATIONINSIGHTS_AUTHENTICATION_STRING: 'ClientId=${userAssignedIdentity.properties.clientId};Authorization=AAD'
       }
   }
