@@ -19,7 +19,7 @@ param functionAppRuntimeVersion string = '9.0' //Defaults to .NET 8.
 @maxValue(2)
 param maximumInstanceCount int = 1
 
-param instanceMemoryMB int = 1024
+param instanceMemoryMB int = 512
 
 //********************************************
 // Variables
