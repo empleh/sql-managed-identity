@@ -68,7 +68,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   }
 }
 
-module storage 'br/public:avm/res/storage/storage-account:0.25.0' = {
+module storage 'br/public:avm/res/storage/storage-account:0.29.0' = {
   name: 'storage'
   scope: rg
   params: {
