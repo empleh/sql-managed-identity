@@ -85,3 +85,9 @@ jobs:
 #        failOnStdErr: false
 #        scope: ''
 
+ # powershell get output variables 
+  
+  # dacpac to run migration sql
+  
+  
+  # dacpac to grant function app permissions to db

@@ -5,6 +5,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{40574476-EABF-4E9E-80A7-A69C84CE2EDA}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\azure-functions-app-dotnet.yml = ..\.github\workflows\azure-functions-app-dotnet.yml
+		Deployment\GenerateSqlScript.ps1 = Deployment\GenerateSqlScript.ps1
 	EndProjectSection
 EndProject
 Global
