@@ -56,7 +56,7 @@ jobs:
       uses: azure/arm-deploy@v2
       with:
         resourceGroupName: 'rg-sql-managed-identity'
-        template: ./deploy.bicep
+        template: ./deployment/deploy.bicep
         parameters: 'storagePrefix=mystore storageSKU=Standard_LRS'
         failOnStdErr: false
         scope: ''
