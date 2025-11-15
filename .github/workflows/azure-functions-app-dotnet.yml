@@ -86,7 +86,7 @@ jobs:
       uses: azure/sql-action@v2.3
       with:
         connection-string: 'Server=tcp:${{ fromJson(steps.fa.outputs.functionAppSettings).SQL_SERVER_NAME },1433;Initial Catalog=${{ fromJson(steps.fa.outputs.functionAppSettings).SQL_DB_NAME }};Authentication=Active Directory Managed Identity;Encrypt=True;TrustServerCertificate=False;'
-        path: ./SqlManagedIdentity/FunctionApp/Migrations/migration.sql
+        path: ./SqlManagedIdentity/Migration1.sql
   
   
   # dacpac to grant function app permissions to db
