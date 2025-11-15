@@ -55,10 +55,9 @@ jobs:
     - name: Deploy Bicep file
       uses: azure/arm-deploy@v2
       with:
-        resourceGroupName: 'rg-sql-managed-identity'
         template: ./SqlManagedIdentity/Deployment/deploy.bicep
         failOnStdErr: false
-        scope: ''
+        scope: 'subscription'
       
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
