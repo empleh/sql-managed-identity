@@ -124,9 +124,20 @@ param appName string = 'func-${resourceToken}'
 //   }
 // }
 
-//********************************************
-// Function app and Flex Consumption plan definitions
-//********************************************
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: 'st${appName}'
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    minimumTlsVersion: 'TLS1_2'
+    allowBlobPublicAccess: false
+    allowSharedKeyAccess: false
+  }
+}
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: 'plan-${resourceToken}'
@@ -153,6 +164,20 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
     httpsOnly: true
     siteConfig: {
       minTlsVersion: '1.2'
+       appSettings: [
+          {
+              name: 'AzureWebJobsStorage__accountname'
+              value: storageAccount.name
+            }
+            {
+              name: 'FUNCTIONS_EXTENSION_VERSION'
+              value: '~4'
+            }
+            {
+              name: 'FUNCTIONS_WORKER_RUNTIME'
+              value: 'dotnet-isolated'
+            }
+        ]
     }
     functionAppConfig: {
 //       deployment: {
