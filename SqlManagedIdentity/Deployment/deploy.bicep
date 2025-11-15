@@ -146,7 +146,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   location: location
   kind: 'functionapp,linux'
   identity: {
-    type: 'ManagedIdentity'
+    type: 'SystemAssigned'
     }
   properties: {
     serverFarmId: appServicePlan.id
