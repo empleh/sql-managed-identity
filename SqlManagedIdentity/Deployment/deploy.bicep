@@ -7,7 +7,7 @@ that connects to Azure Storage by using managed identities with Microsoft Entra 
 
 @description('Primary region for all Azure resources.')
 @minLength(1)
-param location string = resourceGroup().location 
+param location string = resourceGroup().location
 
 @description('Language runtime used by the function app.')
 @allowed(['dotnet-isolated'])
@@ -20,6 +20,8 @@ param functionAppRuntimeVersion string = '9.0' //Defaults to .NET 8.
 @description('The maximum scale-out instance count limit for the app.')
 @maxValue(2)
 param maximumInstanceCount int = 1
+
+param instanceMemoryMB int = 1024
 
 @description('A unique token used for resource name generation.')
 @minLength(3)
@@ -44,168 +46,107 @@ param appName string = 'func-${resourceToken}'
 // var storageQueueDataContributorId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
 // var storageTableDataContributorId = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
 
+var rg = resourceGroup()
+var storageAccountName = 'stsqlmanagedidentity'
+var deploymentStorageContainerName = 'deployment${resourceToken}'
+
 //********************************************
 // Azure resources required by your function app.
 //********************************************
 
-// resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-//   name: 'st${resourceToken}'
-//   location: location
-//   kind: 'StorageV2'
-//   sku: { name: 'Standard_LRS' }
-//   properties: {
-//     accessTier: 'Hot'
-//     allowBlobPublicAccess: false
-//     allowSharedKeyAccess: storageAccountAllowSharedKeyAccess
-//     dnsEndpointType: 'Standard'
-//     minimumTlsVersion: 'TLS1_2'
-//     networkAcls: {
-//       bypass: 'AzureServices'
-//       defaultAction: 'Allow'
-//     }
-//     publicNetworkAccess: 'Enabled'
-//   }
-//   resource blobServices 'blobServices' = {
-//     name: 'default'
-//     properties: {
-//       deleteRetentionPolicy: {}
-//     }
-//     resource deploymentContainer 'containers' = {
-//       name: deploymentStorageContainerName
-//       properties: {
-//         publicAccess: 'None'
-//       }
-//     }
-//   }
-// }
-
-// resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-//   name: 'uai-data-owner-${resourceToken}'
-//   location: location
-// }
-// 
-// resource roleAssignmentBlobDataOwner 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Blob Data Owner')
-//   scope: storage
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataOwnerRoleId)
-//     principalId: userAssignedIdentity.properties.principalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-// 
-// resource roleAssignmentBlob 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Blob Data Contributor')
-//   scope: storage
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataContributorRoleId)
-//     principalId: userAssignedIdentity.properties.principalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-
-// resource roleAssignmentQueueStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Queue Data Contributor')
-//   scope: storage
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageQueueDataContributorId)
-//     principalId: userAssignedIdentity.properties.principalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-// 
-// resource roleAssignmentTableStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Table Data Contributor')
-//   scope: storage
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageTableDataContributorId)
-//     principalId: userAssignedIdentity.properties.principalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-
-
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: 'stsqlmanaged'
+  name: storageAccountName
   location: location
+  kind: 'StorageV2'
   sku: {
     name: 'Standard_LRS'
   }
-  kind: 'StorageV2'
   properties: {
-    minimumTlsVersion: 'TLS1_2'
+    supportsHttpsTrafficOnly: true
+    defaultToOAuthAuthentication: true
     allowBlobPublicAccess: false
-    allowSharedKeyAccess: false
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
-  name: 'plan-${resourceToken}'
-  location: location
-  kind: 'functionapp'
-  sku: {
-    tier: 'FlexConsumption'
-    name: 'FC1'
-  }
-  properties: {
-    reserved: true
-  }
-}
-
-resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
-  name: appName
-  location: location
-  kind: 'functionapp,linux'
-  identity: {
-    type: 'SystemAssigned'
+module storage 'br/public:avm/res/storage/storage-account:0.25.0' = {
+  name: 'storage'
+  scope: rg
+  params: {
+    name: storageAccountName
+    allowBlobPublicAccess: false
+    allowSharedKeyAccess: false // Disable local authentication methods as per policy
+    dnsEndpointType: 'Standard'
+    publicNetworkAccess: 'Enabled'
+    networkAcls: {
+      defaultAction: 'Allow'
+      bypass: 'AzureServices'
     }
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-    siteConfig: {
-      minTlsVersion: '1.2'
-       appSettings: [
-          {
-              name: 'AzureWebJobsStorage__accountname'
-              value: storageAccount.name
-            }
-            {
-              name: 'FUNCTIONS_EXTENSION_VERSION'
-              value: '~4'
-            }
-            {
-              name: 'FUNCTIONS_WORKER_RUNTIME'
-              value: 'dotnet-isolated'
-            }
-        ]
+    blobServices: {
+      containers: [{name: deploymentStorageContainerName}]
+    }
+    tableServices:{}
+    queueServices: {}
+    minimumTlsVersion: 'TLS1_2'  // Enforcing TLS 1.2 for better security
+    location: location
+  }
+}
+
+module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.1' = {
+  name: 'appserviceplan'
+  scope: rg
+  params: {
+    name: 'plan${resourceToken}'
+    sku: {
+      name: 'FC1'
+      tier: 'FlexConsumption'
+    }
+    reserved: true
+    location: location
+  }
+}
+
+module functionApp 'br/public:avm/res/web/site:0.16.0' = {
+  name: 'functionapp'
+  scope: rg
+  params: {
+    kind: 'functionapp,linux'
+    name: appName
+    location: location
+    serverFarmResourceId: appServicePlan.outputs.resourceId
+    managedIdentities: {
+      systemAssigned: true
     }
     functionAppConfig: {
-//       deployment: {
-//         storage: {
-//           type: 'blobContainer'
-//           value: '${storage.properties.primaryEndpoints.blob}${deploymentStorageContainerName}'
-//           authentication: {
-//             type: 'UserAssignedIdentity'
-//             userAssignedIdentityResourceId: userAssignedIdentity.id
-//           }
-//         }
-//       }
+      deployment: {
+        storage: {
+          type: 'blobContainer'
+          value: '${storage.outputs.primaryBlobEndpoint}${deploymentStorageContainerName}'
+          authentication: {
+            type: 'SystemAssignedIdentity'
+          }
+        }
+      }
       scaleAndConcurrency: {
         maximumInstanceCount: maximumInstanceCount
+        instanceMemoryMB: instanceMemoryMB
       }
       runtime: { 
         name: functionAppRuntime
         version: functionAppRuntimeVersion
       }
     }
+    siteConfig: {
+      alwaysOn: false
+    }
+    configs: [{
+      name: 'appsettings'
+      properties:{
+        // Only include required credential settings unconditionally
+        AzureWebJobsStorage__credential: 'managedidentity'
+        AzureWebJobsStorage__blobServiceUri: 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
+        AzureWebJobsStorage__queueServiceUri: 'https://${storage.outputs.name}.queue.${environment().suffixes.storage}'
+        AzureWebJobsStorage__tableServiceUri: 'https://${storage.outputs.name}.table.${environment().suffixes.storage}'
+    }
+    }]
   }
-//   resource configAppSettings 'config' = {
-//     name: 'appsettings'
-//     properties: {
-//         AzureWebJobsStorage__accountName: storage.name
-//         AzureWebJobsStorage__credential : 'managedidentity'
-//         AzureWebJobsStorage__clientId: userAssignedIdentity.properties.clientId
-//         APPLICATIONINSIGHTS_AUTHENTICATION_STRING: 'ClientId=${userAssignedIdentity.properties.clientId};Authorization=AAD'
-//       }
-//   }
 }
