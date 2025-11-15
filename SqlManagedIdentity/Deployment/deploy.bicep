@@ -78,7 +78,13 @@ module sqlServer 'br/public:avm/res/sql/server:0.21.0' = {
   params: {
     name: 'sqlmanagedidentity${resourceToken}'
     location: location
-    administratorLogin: '' 
+    administrators: {
+        azureADOnlyAuthentication:true
+        login: 'sqladmin${resourceToken}'
+        principalType: 'Application'
+        sid: functionApp.outputs.?systemAssignedMIPrincipalId ?? ''
+        tenantId: subscription().tenantId
+    }
   }
 }
 
