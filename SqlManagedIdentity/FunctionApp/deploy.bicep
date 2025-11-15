@@ -10,21 +10,16 @@ that connects to Azure Storage by using managed identities with Microsoft Entra 
 param location string = resourceGroup().location 
 
 @description('Language runtime used by the function app.')
-@allowed(['dotnet-isolated','python','java', 'node', 'powerShell'])
+@allowed(['dotnet-isolated'])
 param functionAppRuntime string = 'dotnet-isolated' //Defaults to .NET isolated worker
 
 @description('Target language version used by the function app.')
-@allowed(['3.10','3.11', '7.4', '8.0', '9.0', '10', '11', '17', '20'])
-param functionAppRuntimeVersion string = '8.0' //Defaults to .NET 8.
+@allowed(['9.0', '10'])
+param functionAppRuntimeVersion string = '9.0' //Defaults to .NET 8.
 
 @description('The maximum scale-out instance count limit for the app.')
-@minValue(40)
-@maxValue(1000)
-param maximumInstanceCount int = 100
-
-@description('The memory size of instances used by the app.')
-@allowed([2048,4096])
-param instanceMemoryMB int = 2048
+@maxValue(2)
+param maximumInstanceCount int = 1
 
 @description('A unique token used for resource name generation.')
 @minLength(3)
