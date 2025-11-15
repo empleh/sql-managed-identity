@@ -131,3 +131,27 @@ module functionApp 'br/public:avm/res/web/site:0.19.4' = {
     }]
   }
 }
+
+var  managedIdentityPrincipalId string = functionApp.outputs.?systemAssignedMIPrincipalId ?? '' // Principal ID for the System-Assigned Managed Identity
+
+// Define Role Definition IDs for Azure built-in roles
+var roleDefinitions = {
+  storageBlobDataOwner: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' // Storage Blob Data Owner role
+  storageQueueDataContributor: '974c5e8b-45b9-4653-ba55-5f855dd0fb88' // Storage Queue Data Contributor role
+  storageTableDataContributor: '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3' // Storage Table Data Contributor role
+  monitoringMetricsPublisher: '3913510d-42f4-4e42-8a64-420c390055eb' // Monitoring Metrics Publisher role
+}
+
+// Storage Account - Blob Data Owner Role Assignment (System-Assigned Managed Identity)
+module storageRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
+  name: 'storageRoleAssignment-managedidentity'
+  scope: rg
+  params: {
+    resourceId: storage.outputs.resourceId
+    roleDefinitionId: roleDefinitions.storageBlobDataOwner
+    principalId: managedIdentityPrincipalId
+    principalType: 'ServicePrincipal'
+    description: 'Storage Blob Data Owner role for Function App system-assigned managed identity'
+    roleName: 'Storage Blob Data Owner'
+  }
+}
