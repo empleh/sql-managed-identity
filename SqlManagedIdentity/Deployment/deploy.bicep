@@ -72,6 +72,16 @@ module storage 'br/public:avm/res/storage/storage-account:0.29.0' = {
   }
 }
 
+module sqlServer 'br/public:avm/res/sql/server:0.21.0' = {
+  scope: rg
+  name: 'sql-for-managed-identity-${resourceToken}'
+  params: {
+    name: 'sqlmanagedidentity${resourceToken}'
+    location: location
+    administratorLogin: '' 
+  }
+}
+
 module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.1' = {
   name: 'appserviceplan'
   scope: rg
