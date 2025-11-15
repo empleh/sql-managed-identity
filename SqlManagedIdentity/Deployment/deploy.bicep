@@ -88,6 +88,17 @@ module sqlServer 'br/public:avm/res/sql/server:0.21.0' = {
   }
 }
 
+module sqlDatabase 'br/public:avm/res/sql/server/database:0.2.0' = {
+  scope: rg
+  name: 'sql-db-todo'
+  params: {
+    name: 'sql-db-todo'
+    location: location
+    serverName: sqlServer.outputs.name
+    availabilityZone: -1
+  }
+}
+
 module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.1' = {
   name: 'appserviceplan'
   scope: rg
