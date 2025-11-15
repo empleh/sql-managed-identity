@@ -58,6 +58,7 @@ jobs:
         template: ./SqlManagedIdentity/Deployment/deploy.bicep
         failOnStdErr: false
         scope: 'subscription'
+        region: 'Central US'
       
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
