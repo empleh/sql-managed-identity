@@ -23,7 +23,7 @@ on:
     branches: ["main"]
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'func-sql-managed'   # set this to your function app name on Azure
+  AZURE_FUNCTIONAPP_NAME: 'func-cus'   # set this to your function app name on Azure
   # Point this to the folder that contains your Function App csproj (update if your project is in a subfolder)
   AZURE_FUNCTIONAPP_PACKAGE_PATH: 'SqlManagedIdentity'
 
