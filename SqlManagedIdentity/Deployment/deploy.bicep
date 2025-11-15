@@ -15,10 +15,6 @@ param functionAppRuntime string = 'dotnet-isolated' //Defaults to .NET isolated 
 @allowed(['9.0', '10'])
 param functionAppRuntimeVersion string = '9.0' //Defaults to .NET 8.
 
-@description('The maximum scale-out instance count limit for the app.')
-@maxValue(2)
-param maximumInstanceCount int = 1
-
 param instanceMemoryMB int = 512
 
 //********************************************
@@ -42,6 +38,7 @@ var resourceToken string = 'cus'
 var storageAccountName = 'stsqlmanagedidentity'
 var deploymentStorageContainerName = 'deployment${resourceToken}'
 var appName string = 'func-${resourceToken}'
+var maximumInstanceCount int = 40
 
 //********************************************
 // Azure resources required by your function app.
