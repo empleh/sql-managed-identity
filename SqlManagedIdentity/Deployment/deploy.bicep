@@ -7,10 +7,6 @@ targetScope = 'subscription'
 // Parameters
 //********************************************
 
-@description('Primary region for all Azure resources.')
-@minLength(1)
-param location string = resourceGroup().location
-
 @description('Language runtime used by the function app.')
 @allowed(['dotnet-isolated'])
 param functionAppRuntime string = 'dotnet-isolated' //Defaults to .NET isolated worker
@@ -24,13 +20,6 @@ param functionAppRuntimeVersion string = '9.0' //Defaults to .NET 8.
 param maximumInstanceCount int = 1
 
 param instanceMemoryMB int = 1024
-
-@description('A unique token used for resource name generation.')
-@minLength(3)
-param resourceToken string = toLower(uniqueString(subscription().id, location))
-
-@description('A globally unique name for your deployed function app.')
-param appName string = 'func-${resourceToken}'
 
 //********************************************
 // Variables
@@ -48,8 +37,12 @@ param appName string = 'func-${resourceToken}'
 // var storageQueueDataContributorId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
 // var storageTableDataContributorId = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
 
+var location string = 'centralus'
+var resourceToken string = 'cus'
 var storageAccountName = 'stsqlmanagedidentity'
 var deploymentStorageContainerName = 'deployment${resourceToken}'
+var appName string = 'func-${resourceToken}'
+
 
 //********************************************
 // Azure resources required by your function app.
