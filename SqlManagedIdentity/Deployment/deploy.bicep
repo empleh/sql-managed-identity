@@ -33,96 +33,96 @@ param appName string = 'func-${resourceToken}'
 //********************************************
 
 // Generates a unique container name for deployments.
-var deploymentStorageContainerName = 'app-package-${take(appName, 32)}-${take(resourceToken, 7)}'
-
-// Key access to the storage account is disabled by default 
-var storageAccountAllowSharedKeyAccess = false
-
-// Define the IDs of the roles we need to assign to our managed identities.
-var storageBlobDataOwnerRoleId  = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
-var storageBlobDataContributorRoleId = 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
-var storageQueueDataContributorId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
-var storageTableDataContributorId = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
+// 
+// 
+// // Key access to the storage account is disabled by default 
+// var storageAccountAllowSharedKeyAccess = false
+// 
+// // Define the IDs of the roles we need to assign to our managed identities.
+// var storageBlobDataOwnerRoleId  = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
+// var storageBlobDataContributorRoleId = 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+// var storageQueueDataContributorId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
+// var storageTableDataContributorId = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
 
 //********************************************
 // Azure resources required by your function app.
 //********************************************
 
-resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: 'st${resourceToken}'
-  location: location
-  kind: 'StorageV2'
-  sku: { name: 'Standard_LRS' }
-  properties: {
-    accessTier: 'Hot'
-    allowBlobPublicAccess: false
-    allowSharedKeyAccess: storageAccountAllowSharedKeyAccess
-    dnsEndpointType: 'Standard'
-    minimumTlsVersion: 'TLS1_2'
-    networkAcls: {
-      bypass: 'AzureServices'
-      defaultAction: 'Allow'
-    }
-    publicNetworkAccess: 'Enabled'
-  }
-  resource blobServices 'blobServices' = {
-    name: 'default'
-    properties: {
-      deleteRetentionPolicy: {}
-    }
-    resource deploymentContainer 'containers' = {
-      name: deploymentStorageContainerName
-      properties: {
-        publicAccess: 'None'
-      }
-    }
-  }
-}
+// resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+//   name: 'st${resourceToken}'
+//   location: location
+//   kind: 'StorageV2'
+//   sku: { name: 'Standard_LRS' }
+//   properties: {
+//     accessTier: 'Hot'
+//     allowBlobPublicAccess: false
+//     allowSharedKeyAccess: storageAccountAllowSharedKeyAccess
+//     dnsEndpointType: 'Standard'
+//     minimumTlsVersion: 'TLS1_2'
+//     networkAcls: {
+//       bypass: 'AzureServices'
+//       defaultAction: 'Allow'
+//     }
+//     publicNetworkAccess: 'Enabled'
+//   }
+//   resource blobServices 'blobServices' = {
+//     name: 'default'
+//     properties: {
+//       deleteRetentionPolicy: {}
+//     }
+//     resource deploymentContainer 'containers' = {
+//       name: deploymentStorageContainerName
+//       properties: {
+//         publicAccess: 'None'
+//       }
+//     }
+//   }
+// }
 
-resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: 'uai-data-owner-${resourceToken}'
-  location: location
-}
+// resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+//   name: 'uai-data-owner-${resourceToken}'
+//   location: location
+// }
+// 
+// resource roleAssignmentBlobDataOwner 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Blob Data Owner')
+//   scope: storage
+//   properties: {
+//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataOwnerRoleId)
+//     principalId: userAssignedIdentity.properties.principalId
+//     principalType: 'ServicePrincipal'
+//   }
+// }
+// 
+// resource roleAssignmentBlob 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Blob Data Contributor')
+//   scope: storage
+//   properties: {
+//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataContributorRoleId)
+//     principalId: userAssignedIdentity.properties.principalId
+//     principalType: 'ServicePrincipal'
+//   }
+// }
 
-resource roleAssignmentBlobDataOwner 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Blob Data Owner')
-  scope: storage
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataOwnerRoleId)
-    principalId: userAssignedIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-resource roleAssignmentBlob 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Blob Data Contributor')
-  scope: storage
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataContributorRoleId)
-    principalId: userAssignedIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-resource roleAssignmentQueueStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Queue Data Contributor')
-  scope: storage
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageQueueDataContributorId)
-    principalId: userAssignedIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-resource roleAssignmentTableStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Table Data Contributor')
-  scope: storage
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageTableDataContributorId)
-    principalId: userAssignedIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
+// resource roleAssignmentQueueStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Queue Data Contributor')
+//   scope: storage
+//   properties: {
+//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageQueueDataContributorId)
+//     principalId: userAssignedIdentity.properties.principalId
+//     principalType: 'ServicePrincipal'
+//   }
+// }
+// 
+// resource roleAssignmentTableStorage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: guid(subscription().id, storage.id, userAssignedIdentity.id, 'Storage Table Data Contributor')
+//   scope: storage
+//   properties: {
+//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageTableDataContributorId)
+//     principalId: userAssignedIdentity.properties.principalId
+//     principalType: 'ServicePrincipal'
+//   }
+// }
 
 //********************************************
 // Function app and Flex Consumption plan definitions
@@ -146,10 +146,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   location: location
   kind: 'functionapp,linux'
   identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${userAssignedIdentity.id}':{}
-      }
+    type: 'ManagedIdentity'
     }
   properties: {
     serverFarmId: appServicePlan.id
@@ -158,16 +155,16 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       minTlsVersion: '1.2'
     }
     functionAppConfig: {
-      deployment: {
-        storage: {
-          type: 'blobContainer'
-          value: '${storage.properties.primaryEndpoints.blob}${deploymentStorageContainerName}'
-          authentication: {
-            type: 'UserAssignedIdentity'
-            userAssignedIdentityResourceId: userAssignedIdentity.id
-          }
-        }
-      }
+//       deployment: {
+//         storage: {
+//           type: 'blobContainer'
+//           value: '${storage.properties.primaryEndpoints.blob}${deploymentStorageContainerName}'
+//           authentication: {
+//             type: 'UserAssignedIdentity'
+//             userAssignedIdentityResourceId: userAssignedIdentity.id
+//           }
+//         }
+//       }
       scaleAndConcurrency: {
         maximumInstanceCount: maximumInstanceCount
       }
@@ -177,13 +174,13 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       }
     }
   }
-  resource configAppSettings 'config' = {
-    name: 'appsettings'
-    properties: {
-        AzureWebJobsStorage__accountName: storage.name
-        AzureWebJobsStorage__credential : 'managedidentity'
-        AzureWebJobsStorage__clientId: userAssignedIdentity.properties.clientId
-        APPLICATIONINSIGHTS_AUTHENTICATION_STRING: 'ClientId=${userAssignedIdentity.properties.clientId};Authorization=AAD'
-      }
-  }
+//   resource configAppSettings 'config' = {
+//     name: 'appsettings'
+//     properties: {
+//         AzureWebJobsStorage__accountName: storage.name
+//         AzureWebJobsStorage__credential : 'managedidentity'
+//         AzureWebJobsStorage__clientId: userAssignedIdentity.properties.clientId
+//         APPLICATIONINSIGHTS_AUTHENTICATION_STRING: 'ClientId=${userAssignedIdentity.properties.clientId};Authorization=AAD'
+//       }
+//   }
 }
