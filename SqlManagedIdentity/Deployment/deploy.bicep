@@ -43,7 +43,6 @@ var storageAccountName = 'stsqlmanagedidentity'
 var deploymentStorageContainerName = 'deployment${resourceToken}'
 var appName string = 'func-${resourceToken}'
 
-
 //********************************************
 // Azure resources required by your function app.
 //********************************************
