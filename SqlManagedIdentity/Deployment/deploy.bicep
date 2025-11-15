@@ -90,9 +90,9 @@ module sqlServer 'br/public:avm/res/sql/server:0.21.0' = {
 
 module sqlDatabase 'br/public:avm/res/sql/server/database:0.2.0' = {
   scope: rg
-  name: 'sql-db-todo'
+  name: 'todo'
   params: {
-    name: 'sql-db-todo'
+    name: 'todo'
     location: location
     serverName: sqlServer.outputs.name
     availabilityZone: -1
@@ -182,3 +182,5 @@ module storageRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assi
     roleName: 'Storage Blob Data Owner'
   }
 }
+
+output functionPrincipalId string = functionApp.outputs.systemAssignedMIPrincipalId

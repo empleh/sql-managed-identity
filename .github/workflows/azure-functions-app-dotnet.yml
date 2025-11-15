@@ -59,6 +59,18 @@ jobs:
         failOnStdErr: false
         scope: 'subscription'
         region: 'Central US'
+        
+      # powershell get output variables
+        
+    - name: Get Bicep outputs
+      shell: bash
+      run: |
+        deploymentName="bicep-deploy-${{ github.run_id }}"
+        echo "Querying deployment outputs for $deploymentName"
+        az deployment sub show --name "$deploymentName" --query properties.outputs -o json > bicep_outputs.json
+        cat bicep_outputs.json
+        functionPrincipalId=$(jq -r '.functionAppManagedIdentityPrincipalId.value // empty' bicep_outputs.json)
+        echo "functionPrincipalId=$functionPrincipalId" >> $GITHUB_OUTPUT        
       
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
@@ -67,9 +79,14 @@ jobs:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
 
- # powershell get output variables 
+ 
   
-  # dacpac to run migration sql
+    # dacpac to run migration sql
+    - name: 'Sql Migration'
+      uses: azure/sql-action@v2.3
+      with:
+        connection-string: 'Server=tcp:${{ fromJson(steps.fa.outputs.functionAppSettings).SQL_SERVER_NAME },1433;Initial Catalog=${{ fromJson(steps.fa.outputs.functionAppSettings).SQL_DB_NAME }};Authentication=Active Directory Managed Identity;Encrypt=True;TrustServerCertificate=False;'
+        path: ./SqlManagedIdentity/FunctionApp/Migrations/migration.sql
   
   
   # dacpac to grant function app permissions to db
