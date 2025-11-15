@@ -1,6 +1,8 @@
 /* This Bicep file creates a function app running in a Flex Consumption plan 
 that connects to Azure Storage by using managed identities with Microsoft Entra ID. */
 
+targetScope = 'subscription'
+
 //********************************************
 // Parameters
 //********************************************
@@ -46,7 +48,6 @@ param appName string = 'func-${resourceToken}'
 // var storageQueueDataContributorId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
 // var storageTableDataContributorId = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
 
-var rg = resourceGroup()
 var storageAccountName = 'stsqlmanagedidentity'
 var deploymentStorageContainerName = 'deployment${resourceToken}'
 
@@ -54,18 +55,9 @@ var deploymentStorageContainerName = 'deployment${resourceToken}'
 // Azure resources required by your function app.
 //********************************************
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: storageAccountName
+resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   location: location
-  kind: 'StorageV2'
-  sku: {
-    name: 'Standard_LRS'
-  }
-  properties: {
-    supportsHttpsTrafficOnly: true
-    defaultToOAuthAuthentication: true
-    allowBlobPublicAccess: false
-  }
+  name: 'rg-sql-managed-identity-${resourceToken}'
 }
 
 module storage 'br/public:avm/res/storage/storage-account:0.29.0' = {
@@ -105,7 +97,7 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.1' = {
   }
 }
 
-module functionApp 'br/public:avm/res/web/site:0.16.0' = {
+module functionApp 'br/public:avm/res/web/site:0.19.4' = {
   name: 'functionapp'
   scope: rg
   params: {
