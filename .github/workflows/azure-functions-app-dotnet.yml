@@ -57,7 +57,6 @@ jobs:
       with:
         resourceGroupName: 'rg-sql-managed-identity'
         template: ./SqlManagedIdentity/Deployment/deploy.bicep
-        parameters: 'storagePrefix=mystore storageSKU=Standard_LRS'
         failOnStdErr: false
         scope: ''
       
