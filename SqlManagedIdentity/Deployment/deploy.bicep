@@ -80,9 +80,10 @@ module sqlServer 'br/public:avm/res/sql/server:0.21.0' = {
     location: location
     administrators: {
         azureADOnlyAuthentication:true
-        login: 'sqladmin${resourceToken}'
-        principalType: 'Application'
-        sid: functionApp.outputs.?systemAssignedMIPrincipalId ?? ''
+        administratorType: 'ActiveDirectory'
+        principalType: 'Group'
+        login: 'SQL-Admins' // Display name
+        sid: 'e63ec2b1-525d-4d48-b9bc-d159631d1e45'
         tenantId: subscription().tenantId
     }
   }
