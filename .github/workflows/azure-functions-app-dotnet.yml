@@ -77,7 +77,7 @@ jobs:
       - name: 'Sql Migration'
         uses: azure/sql-action@v2.3
         with:
-          connection-string: 'Server=tcp:sqlmanagedidentitycus.database.windows.net,1433;Initial Catalog=sql-db-todo;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication="Active Directory Default";'
+          connection-string: 'Server=tcp:sqlmanagedidentitycus.database.windows.net,1433;Initial Catalog=todo;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication="Active Directory Default";'
           path: ./SqlManagedIdentity/Migration1.sql
 
       - name: Execute PowerShell script
