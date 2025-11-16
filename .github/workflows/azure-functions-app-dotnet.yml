@@ -53,6 +53,7 @@ jobs:
         popd
 
     - name: Deploy Bicep file
+      id: bicep_deployment
       uses: azure/arm-deploy@v2
       with:
         template: ./SqlManagedIdentity/Deployment/deploy.bicep
@@ -62,15 +63,19 @@ jobs:
         
       # powershell get output variables
         
-    - name: Get Bicep outputs
-      shell: bash
+#    - name: Get Bicep outputs
+#      shell: bash
+#      run: |
+#        deploymentName="bicep-deploy-${{ github.run_id }}"
+#        echo "Querying deployment outputs for $deploymentName"
+#        az deployment sub show --name "$deploymentName" --query properties.outputs -o json > bicep_outputs.json
+#        cat bicep_outputs.json
+#        functionPrincipalId=$(jq -r '.functionAppManagedIdentityPrincipalId.value // empty' bicep_outputs.json)
+#        echo "functionPrincipalId=$functionPrincipalId" >> $GITHUB_OUTPUT
+        
+    - name: Use Bicep Outputs
       run: |
-        deploymentName="bicep-deploy-${{ github.run_id }}"
-        echo "Querying deployment outputs for $deploymentName"
-        az deployment sub show --name "$deploymentName" --query properties.outputs -o json > bicep_outputs.json
-        cat bicep_outputs.json
-        functionPrincipalId=$(jq -r '.functionAppManagedIdentityPrincipalId.value // empty' bicep_outputs.json)
-        echo "functionPrincipalId=$functionPrincipalId" >> $GITHUB_OUTPUT        
+        echo "Function App Id: ${{ steps.bicep_deployment.outputs.functionPrincipalId }}"        
       
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
