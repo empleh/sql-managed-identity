@@ -85,7 +85,7 @@ jobs:
     - name: 'Sql Migration'
       uses: azure/sql-action@v2.3
       with:
-        connection-string: 'Server=tcp:${{ fromJson(steps.fa.outputs.functionAppSettings).SQL_SERVER_NAME },1433;Initial Catalog=${{ fromJson(steps.fa.outputs.functionAppSettings).SQL_DB_NAME }};Authentication=Active Directory Managed Identity;Encrypt=True;TrustServerCertificate=False;'
+        connection-string: 'Server=tcp:sqlmanagedidentitycus.database.windows.net,1433;Initial Catalog=sql-db-todo;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication="Active Directory Default";'
         path: ./SqlManagedIdentity/Migration1.sql
   
   
