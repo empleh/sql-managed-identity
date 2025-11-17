@@ -55,4 +55,6 @@ SET @SQL = 'ALTER ROLE [db_datawriter] ADD MEMBER [' + @AppName + N'];';
 EXEC sp_executesql @SQL;
 "@
 
+Write-Host "SQL script generated at: $sqlFilePath"
+
 $sqlContent | Out-File -FilePath $sqlFilePath -Encoding UTF8
