@@ -81,7 +81,9 @@ jobs:
           path: ./SqlManagedIdentity/Migration1.sql
 
       - name: Execute PowerShell script
-        run: ./SqlManagedIdentity/Deployment//GenerateSqlScript.ps1 -appName "'func-cus'" -principalId '${{ steps.bicep_deployment.outputs.functionPrincipalId }}'
-        shell: pwsh
+        uses: azure/powershell@v2
+        with:
+          azPSVersion: 'latest'
+          inlineScript: ./SqlManagedIdentity/Deployment//GenerateSqlScript.ps1 -appName "'func-cus'" -principalId '${{ steps.bicep_deployment.outputs.functionPrincipalId }}'
         
   # dacpac to grant function app permissions to db
