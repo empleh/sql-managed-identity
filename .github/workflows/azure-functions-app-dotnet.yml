@@ -84,10 +84,10 @@ jobs:
         uses: azure/powershell@v2
         with:
           azPSVersion: 'latest'
-          inlineScript: ./SqlManagedIdentity/Deployment//GenerateSqlScript.ps1 -appName "'func-cus'" -principalId '${{ steps.bicep_deployment.outputs.functionPrincipalId }}'
+          inlineScript: ./SqlManagedIdentity/Deployment//GenerateSqlScript.ps1 -appName "func-cus" -principalId '${{ steps.bicep_deployment.outputs.functionPrincipalId }}'
           
       - name: 'Run Sql Script to grant permissions'
         uses: azure/sql-action@v2.3
         with:
           connection-string: ${{ env.CONNECTION_STRING }}
-          path: ./SqlManagedIdentity/func-cus-GrantPermissions.sql
+          path: ./SqlManagedIdentity/Deployment/func-cus-GrantPermissions.sql
