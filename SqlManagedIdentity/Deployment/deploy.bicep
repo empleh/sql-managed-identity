@@ -86,6 +86,13 @@ module sqlServer 'br/public:avm/res/sql/server:0.21.0' = {
         sid: 'e63ec2b1-525d-4d48-b9bc-d159631d1e45'
         tenantId: subscription().tenantId
     }
+    firewallRules: [
+      {
+        endIpAddress: '0.0.0.0'
+        name: 'AllowAllWindowsAzureIps'
+        startIpAddress: '0.0.0.0'
+      }
+    ]
   }
 }
 
