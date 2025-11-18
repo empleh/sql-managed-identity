@@ -33,10 +33,10 @@ public class HealthCheck
             _logger.LogError(ex, "Database connection check failed");
             canConnect = false;
         }
-
-        var message = $"Connected: {canConnect}|${Environment.NewLine}" +
-                      $"With connection string: {_db.Database.GetConnectionString()}|${Environment.NewLine}" +
-                      $"Environment: ${Environment.GetEnvironmentVariable("EnvironmentName")}";
+        
+        var message = $"Connected: {canConnect}|{Environment.NewLine}" +
+                      $"With connection string: {_db.Database.GetConnectionString()}|{Environment.NewLine}" +
+                      $"Environment: {Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT")}";
         return new OkObjectResult(message);
     }
 
