@@ -24,6 +24,7 @@ public class HealthCheck
         _logger.LogInformation("C# HTTP trigger function processed a request.");
 
         bool canConnect = false;
+        var errMessage = string.Empty;
         try
         {
             canConnect = await _db.Database.CanConnectAsync();
@@ -32,11 +33,13 @@ public class HealthCheck
         {
             _logger.LogError(ex, "Database connection check failed");
             canConnect = false;
+            errMessage = ex.Message;
         }
-        
+
         var message = $"Connected: {canConnect}|{Environment.NewLine}" +
                       $"With connection string: {_db.Database.GetConnectionString()}|{Environment.NewLine}" +
-                      $"Environment: {Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT")}";
+                      $"Environment: {Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT")}|{Environment.NewLine}" +
+                      $"Error Message: {errMessage}|{Environment.NewLine}";
         return new OkObjectResult(message);
     }
 
