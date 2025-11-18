@@ -13,7 +13,7 @@ builder.ConfigureFunctionsWebApplication();
 
 var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName.ToLowerInvariant()}.json", optional: true)
     .Build();
 
 var connectionString = config.GetConnectionString("SqlConnectionString");
