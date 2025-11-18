@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace FunctionApp;
 
@@ -25,6 +26,7 @@ public class HealthCheck
         bool canConnect = false;
         try
         {
+            _db.Database.SetCommandTimeout(2); // Set a short timeout for health check
             canConnect = await _db.Database.CanConnectAsync();
         }
         catch (System.Exception ex)
@@ -33,7 +35,7 @@ public class HealthCheck
             canConnect = false;
         }
 
-        var message = $"Connected: {canConnect}";
+        var message = $"Connected: {canConnect}| with connection string: {_db.Database.GetConnectionString()}";
         return new OkObjectResult(message);
     }
 

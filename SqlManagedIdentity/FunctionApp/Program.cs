@@ -21,6 +21,7 @@ var connectionString = config.GetConnectionString("SqlConnectionString");
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
+
 });
 
 builder.Services

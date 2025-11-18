@@ -155,6 +155,7 @@ module functionApp 'br/public:avm/res/web/site:0.19.4' = {
         AzureWebJobsStorage__blobServiceUri: 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
         AzureWebJobsStorage__queueServiceUri: 'https://${storage.outputs.name}.queue.${environment().suffixes.storage}'
         AzureWebJobsStorage__tableServiceUri: 'https://${storage.outputs.name}.table.${environment().suffixes.storage}'
+        ASPNETCORE_ENVIRONMENT: 'Production'
     }
     }]
   }
