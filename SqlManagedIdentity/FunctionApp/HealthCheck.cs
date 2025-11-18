@@ -27,7 +27,7 @@ public class HealthCheck
         var errMessage = string.Empty;
         try
         {
-            canConnect = await _db.Database.CanConnectAsync();
+            canConnect = await _db.TodoItems.ToArrayAsync() != null;
         }
         catch (System.Exception ex)
         {
