@@ -26,7 +26,6 @@ public class HealthCheck
         bool canConnect = false;
         try
         {
-            _db.Database.SetCommandTimeout(2); // Set a short timeout for health check
             canConnect = await _db.Database.CanConnectAsync();
         }
         catch (System.Exception ex)
@@ -35,7 +34,9 @@ public class HealthCheck
             canConnect = false;
         }
 
-        var message = $"Connected: {canConnect}| with connection string: {_db.Database.GetConnectionString()}";
+        var message = $"Connected: {canConnect}|${Environment.NewLine}" +
+                      $"With connection string: {_db.Database.GetConnectionString()}|${Environment.NewLine}" +
+                      $"Environment: ${Environment.GetEnvironmentVariable("EnvironmentName")}";
         return new OkObjectResult(message);
     }
 
