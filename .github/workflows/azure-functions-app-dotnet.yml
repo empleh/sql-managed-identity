@@ -41,6 +41,9 @@ jobs:
     environment: dev
     needs: build-reusable
     steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v4
+        
       - name: 'Sql Migration'
         uses: azure/sql-action@v2.3
         with:
