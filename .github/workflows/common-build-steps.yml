@@ -7,9 +7,6 @@ on:
     outputs:
       result:
         value: ${{ jobs.my_job.outputs.output_message }}
-    secrets:
-      MY_SECRET:
-        required: true
 jobs:
   my_job:
     runs-on: ubuntu-latest
