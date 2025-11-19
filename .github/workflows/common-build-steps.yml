@@ -1,18 +1,24 @@
 on:
   workflow_call:
     inputs:
-      message:
+      AZURE_FUNCTIONAPP_PACKAGE_PATH:
+        required: true
+        type: string
+      AZURE_FUNCTIONAPP_NAME:
         required: true
         type: string
     outputs:
       result:
         value: ${{ jobs.my_job.outputs.output_message }}
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true        
 jobs:
   my_job:
     runs-on: ubuntu-latest
     environment: dev
     outputs:
-      functionAppId: ${{ steps.greet.outputs.greeting }}
+      functionAppId: ${{ steps.bicep_deployment.outputs.functionPrincipalId }}
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
@@ -30,7 +36,7 @@ jobs:
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: bash # For Linux, use bash
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          pushd './${{ inputs.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           dotnet build --configuration Release --output ./output
           popd
           
@@ -51,5 +57,5 @@ jobs:
         uses: Azure/functions-action@v1
         id: fa
         with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'          
+          app-name: ${{ inputs.AZURE_FUNCTIONAPP_NAME }}
+          package: '${{ inputs.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'          
