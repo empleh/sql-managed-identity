@@ -10,19 +10,23 @@ inputs:
   AZURE_CREDENTIALS:
     description: 'Azure credentials for login'
     required: true
-    
+  DOTNET_VERSION:
+    description: 'DotNet version to use'
+    required: false
+    default: '9.0.x'
+
 outputs:
   functionPrincipalId:
     description: 'Principal ID of the Function App managed identity'
-    value: ${{ steps.bicep_deployment.outputs.functionPrincipalId }}    
+    value: ${{ steps.bicep_deployment.outputs.functionPrincipalId }}
 
 runs:
   using: "composite"
   steps:
-    - name: Setup DotNet ${{ vars.DOTNET_VERSION }} Environment
+    - name: Setup DotNet ${{ inputs.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ vars.DOTNET_VERSION }}
+        dotnet-version: ${{ inputs.DOTNET_VERSION }}
 
     - name: 'Resolve Project Dependencies Using Dotnet'
       shell: bash # For Linux, use bash
@@ -39,10 +43,6 @@ runs:
         failOnStdErr: false
         scope: 'subscription'
         region: 'Central US'
-
-    - name: Use Bicep Outputs
-      run: |
-        echo "Function App Id: ${{ steps.bicep_deployment.outputs.functionPrincipalId }}"        
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1

@@ -29,6 +29,7 @@ jobs:
           AZURE_FUNCTIONAPP_PACKAGE_PATH: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           AZURE_FUNCTIONAPP_NAME: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          DOTNET_VERSION: ${{ vars.DOTNET_VERSION }}
 
       - name: 'Sql Migration'
         uses: azure/sql-action@v2.3
