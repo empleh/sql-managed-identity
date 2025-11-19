@@ -34,8 +34,6 @@ jobs:
     uses: ./.github/workflows/common-build-steps.yml
     with:
       message: "Building from reusable workflow"
-    outputs: 
-        functionAppId: ${{ jobs.build-reusable.outputs.functionAppId }}
   grant-permissions:
     runs-on: ubuntu-latest # For Linux, use ubuntu-latest
     environment: dev
