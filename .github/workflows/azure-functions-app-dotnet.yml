@@ -24,24 +24,23 @@ on:
     branches: [ "main" ]
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'func-cus'   # set this to your function app name on Azure
-  # Point this to the folder that contains your Function App csproj (update if your project is in a subfolder)
+  AZURE_FUNCTIONAPP_NAME: 'func-cus'  # Point this to the folder that contains your Function App csproj (update if your project is in a subfolder)
   AZURE_FUNCTIONAPP_PACKAGE_PATH: 'SqlManagedIdentity'
   CONNECTION_STRING: 'Server=tcp:sqlmanagedidentitycus.database.windows.net,1433;Initial Catalog=todo;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication="Active Directory Default";'
-                 
+
 jobs:
   build-reusable:
     uses: ./.github/workflows/common-build-steps.yml
     with:
-      AZURE_FUNCTIONAPP_PACKAGE_PATH: ${{env.AZURE_FUNCTIONAPP_PACKAGE_PATH}}
-      AZURE_FUNCTIONAPP_NAME: ${{env.AZURE_FUNCTIONAPP_NAME}}
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: 'SqlManagedIdentity'
+      AZURE_FUNCTIONAPP_NAME: 'func-cus'
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
   grant-permissions:
     runs-on: ubuntu-latest # For Linux, use ubuntu-latest
     environment: dev
     needs: build-reusable
-    steps:      
+    steps:
       - name: 'Sql Migration'
         uses: azure/sql-action@v2.3
         with:
