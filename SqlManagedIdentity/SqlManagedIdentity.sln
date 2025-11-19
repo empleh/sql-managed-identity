@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 		..\.github\workflows\azure-functions-app-dotnet.yml = ..\.github\workflows\azure-functions-app-dotnet.yml
 		Deployment\GenerateSqlScript.ps1 = Deployment\GenerateSqlScript.ps1
 		Deployment\deploy.bicep = Deployment\deploy.bicep
-		..\.github\workflows\common-build-steps.yml = ..\.github\workflows\common-build-steps.yml
+		..\.github\actions\build-and-deploy\action.yml = ..\.github\actions\build-and-deploy\action.yml
 	EndProjectSection
 EndProject
 Global

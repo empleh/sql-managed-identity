@@ -24,7 +24,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: 'Build and Deploy Function App'
-        uses: ./.github/workflows/common-build-steps.yml
+        uses: ./.github/actions/build-and-deploy
         with:
           AZURE_FUNCTIONAPP_PACKAGE_PATH: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           AZURE_FUNCTIONAPP_NAME: ${{ env.AZURE_FUNCTIONAPP_NAME }}
