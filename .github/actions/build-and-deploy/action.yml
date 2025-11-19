@@ -10,6 +10,11 @@ inputs:
   AZURE_CREDENTIALS:
     description: 'Azure credentials for login'
     required: true
+    
+outputs:
+  functionPrincipalId:
+    description: 'Principal ID of the Function App managed identity'
+    value: ${{ steps.bicep_deployment.outputs.functionPrincipalId }}    
 
 runs:
   using: "composite"
