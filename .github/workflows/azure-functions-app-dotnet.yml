@@ -38,15 +38,15 @@ jobs:
           connection-string: ${{ env.CONNECTION_STRING }}
           path: ./SqlManagedIdentity/Migration1.sql
 
-#      - name: 'Generate Sql Script to grant permissions'
-#        uses: azure/powershell@v2
-#        with:
-#          azPSVersion: 'latest'
-#          inlineScript: |
-#            ./SqlManagedIdentity/Deployment/GenerateSqlScript.ps1 -appName "${{ env.AZURE_FUNCTIONAPP_NAME }}" -principalId '${{ steps.build_and_deploy.outputs.functionPrincipalId }}'
-#
-#      - name: 'Run Sql Script to grant permissions'
-#        uses: azure/sql-action@v2.3
-#        with:
-#          connection-string: ${{ env.CONNECTION_STRING }}
-#          path: ./SqlManagedIdentity/Deployment/${{ env.AZURE_FUNCTIONAPP_NAME }}-GrantPermissions.sql
+      - name: 'Generate Sql Script to grant permissions'
+        uses: azure/powershell@v2
+        with:
+          azPSVersion: 'latest'
+          inlineScript: |
+            ./SqlManagedIdentity/Deployment/GenerateSqlScript.ps1 -appName "${{ env.AZURE_FUNCTIONAPP_NAME }}" -principalId '${{ steps.build_and_deploy.outputs.functionPrincipalId }}'
+
+      - name: 'Run Sql Script to grant permissions'
+        uses: azure/sql-action@v2.3
+        with:
+          connection-string: ${{ env.CONNECTION_STRING }}
+          path: ./SqlManagedIdentity/Deployment/${{ env.AZURE_FUNCTIONAPP_NAME }}-GrantPermissions.sql
